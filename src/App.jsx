@@ -1,18 +1,17 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTask } from "./redux/todoSlice";
-import { removeTask } from "./redux/todoSlice";
+import { addTask, removeTask } from "./redux/todoSlice";
 
 const App = () => {
   const dispatch = useDispatch();
-  const task = useSelector((state) => state.task.tasks);
+  const tasks = useSelector((state) => state.task.tasks);
+  const [taskText, setTaskText] = useState("");
 
-  useEffect(() => {
-
-  }, []);
-
-  const handleAddTask = (task) => {
-    dispatch(addTask(task));
+  const handleAddTask = () => {
+    if (taskText.trim() !== "") {
+      dispatch(addTask({ id: Date.now(), text: taskText }));
+      setTaskText("");
+    }
   };
 
   const handleRemoveTask = (taskId) => {
@@ -22,14 +21,18 @@ const App = () => {
   return (
     <div>
       <h1>Lista de tareas</h1>
-      <button onClick={() => handleAddTask({ id: Date.now(), text: "Nueva Tarea" })}>
-        Agregar tarea
-      </button>
+      <input 
+        type="text" 
+        value={taskText} 
+        onChange={(e) => setTaskText(e.target.value)} 
+        placeholder="Escribe una tarea" 
+      />
+      <button onClick={handleAddTask}>Agregar tarea</button>
       <ul>
-        {task.map((taskItem) => ( 
+        {tasks.map((taskItem) => (
           <li key={taskItem.id}>
-            {taskItem.text}{" "}
-            <button onClick={() => handleRemoveTask(taskItem.id)}>Eliminar Tarea</button>
+            {taskItem.text}
+            <button onClick={() => handleRemoveTask(taskItem.id)}>Eliminar</button>
           </li>
         ))}
       </ul>
